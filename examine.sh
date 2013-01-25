@@ -1,7 +1,22 @@
 #!/bin/sh
 ###
-# Usage: examine.sh <device> <custodian> <system_type> <destination>
-# Example: examine.sh /dev/sdd1 ktneely t43 /mnt/images
+# This script expects to be run as root
+#
+# Usage: examine.sh <device> <custodian> <system_type> <FTP password>
+# Example: examine.sh /dev/sdd1 john t43 
+###
+# Requirements
+#
+# plenty of disk space at /data/images and /data/tmp
+# --------------------
+# required programs:
+# --------------------
+# dc3dd program installed; should default to dd if not found
+# ssdeep
+# md5sum
+# sha1sum
+# clamAV installed
+# 
 ###
 
 # initialize variables
@@ -9,9 +24,9 @@ DEVICE=$1
 VICTIM=$2
 SYSTEM_TYPE=$3
 SYSTEM=$2-$3
-IMAGE_DIR=$4
+IMAGE_DIR=/data/images
 IMAGE=$SYSTEM.dd
-TEMP=/tmp/$VICTIM
+TEMP=/data/tmp/$VICTIM
 EXAMINE_DIR=/mnt/examine
 
 # Functions
@@ -29,8 +44,8 @@ cp $EXAMINE_DIR/WINDOWS/system32/config/SysEvent.Evt $TEMP/$SYSTEM-SysEvent.Evt
 cp $EXAMINE_DIR/WINDOWS/system32/config/AppEvent.Evt $TEMP/$SYSTEM-AppEvent.Evt
 echo "compress logs"
 7z a $IMAGE_DIR/$SYSTEM -mx=9 $TEMP/*.Evt
-echo "ftp logs"
-ncftpput -u infosec -p 's3cur!ty' ir-splunk . $TEMP/*.Evt
+#echo "ftp logs"
+#ncftpput -u infosec -p $4 ir-splunk . $TEMP/*.Evt
     }
 
 archive () {      
@@ -68,11 +83,14 @@ fi
 echo "mount image"
 mount -o ro $IMAGE_DIR/$IMAGE $EXAMINE_DIR
 eventLogs  # copy the event logs to ir-splunk
-hash_files # create hash of temp and ys32 files
+hash_files # create hash of temp and sys32 files
 scanimage  # scan the image with ClamAV
 umount $EXAMINE_DIR
 archive
 
-echo "clean up"
-
+# echo "clean up"
+#
+# this section could be a cleanup step, but for now
+# I use tmpreaper to keep the temp spaces clean
+# 
 # rm -rf $TEMP
