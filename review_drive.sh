@@ -4,6 +4,9 @@
 # created by Kevin T. Neely - Junipers Network InfoSec
 #
 # -= Version History =-
+# 0.3 Change of strategy -- IN PROGRESS
+#  - remove the image section to a different script
+#  - add log2timeline/plaso
 # 0.2 Revisions
 #  - added info collection questionnaire
 #  - added case name collection
@@ -26,97 +29,29 @@
 # /Data  - minimum 2TB if you will perform multiple acquisitions or
 #large drives
 # /Data/hashes  - location of your good and bad hash databases
+# Plaso (log2timeline) $git clone https://code.google.com/p/plaso/
 # 
 ###
 
-# initialize variables
-#DEVICE=$1
-#VICTIM=$2
-#SYSTEM_TYPE=$3
-#SYSTEM=$2-$3
-#IMAGE_DIR=$4          -replaced by collect_info
-#IMAGE=$SYSTEM.dd
-#TEMP=/tmp/$VICTIM
-# EXAMINE_DIR=/mnt/$5  -replaced by collect_info
-
 # Functions
-collect_info () {
-#    echo "What is the original drive device (e.g. /dev/sdc1)"
-#    read DEVICE
-    echo "What is the victim's name?"
-    read VICTIM
-    echo "What type of system did the drive come from? (e.g. t400)"
-    read SYSTEM_TYPE
-    SYSTEM=$VICTIM-$SYSTEM_TYPE
-    IMAGE=$SYSTEM.dd
-    TEMP=/Data/tmp/$SYSTEM
-    echo "Enter the case identifier def: [2011-04-07a-crypto]"
-    read input_case
-    CASE_NAME=${input_case:=2011-04-07a-crypto}
-    EXAMINE_DIR=$TEMP/examine
-    mkdir -p $EXAMINE_DIR
-    echo "Enter the image repository def: [/mnt/stor/Images]"
-    read input_image
-    IMAGE_REPOSITORY=${input_image:=/mnt/stor/Images/}
-    IMAGE_DIR=$IMAGE_REPOSITORY/$CASE_NAME
-    mkdir -p $IMAGE_DIR
-    }
     
-# create_examine is not used at present; the directory is created in temp
-create_examine () {
-    if [ -d $EXAMINE_DIR ]; then
-	echo Examination dir is $EXAMINE_DIR;
-	else
-	mkdir -p $EXAMINE_DIR;
-	echo Examination dir $EXAMINE_DIR has been created;
-    fi
-}
 
-check_program () {
+archive () {      
+    echo "compress the image and associated files"
+    7z a $IMAGE_DIR/$SYSTEM -mx=9 -w$TEMP $TEMP/Manifest.lst $TEMP/$SYSTEM.log $TEMP/$SYSTEM.hlog $TEMP/$IMAGE
+    }
+
+check_program () {  # checks is a program exists on the system
     echo "check for existence of $1"
     type "$1" &> /dev/null
 }
 
-eventLogs () {
-#echo "make temp dir"
-#mkdir -P /Data/tmp/$SYSTEM
-echo "copy logs"
-cp $EXAMINE_DIR/WINDOWS/SYSTEM32/CONFIG/SecEvent.Evt $TEMP/$SYSTEM-SecEvent.Evt
-cp $EXAMINE_DIR/WINDOWS/SYSTEM32/CONFIG/SysEvent.Evt $TEMP/$SYSTEM-SysEvent.Evt
-cp $EXAMINE_DIR/WINDOWS/SYSTEM32/CONFIG/AppEvent.Evt $TEMP/$SYSTEM-AppEvent.Evt
-echo "compress logs"
-7z a $IMAGE_DIR/$SYSTEM -mx=9 $TEMP/*.Evt
-echo "ftp logs"
-ncftpput -u infosec -p 's3cur!ty' ir-splunk . $TEMP/*.Evt
-    }
-
-create_manifest () {
-    echo -e "============================================\n" > $TEMP/Manifest.lst
-    echo -e "InfoSec automated examination script\n" >> $TEMP/Manifest.lst
-    echo -e "$SYSTEM \t $CASE_NAME \t $(date +%Y%m%d-%T)"  >> $IMAGE_REPOSITORY/inventory.txt
-    }
-
-scanimage () {
-#    echo "retrieve latest clam defs"
-#    freshclam
-    echo "scan the mounted image"
-    clamscan -r --infected --log=$TEMP/$SYSTEM-clam.log $EXAMINE_DIR
-    avgscan -Hac --report=$TEMP/$SYSTEM-avg.log $EXAMINE_DIR
-    echo "compress the logs"
-    7z a $IMAGE_DIR/$SYSTEM -mx=9 $TEMP/$SYSTEM-clam.log $TEMP/$SYSTEM-avg.log
-    }
-
-hash_files () {
-    echo "md5 sums"
-    md5deep -r -i 4M  $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/* $EXAMINE_DIR/WINDOWS/system32/* > $TEMP/$SYSTEM.md5sums
-    echo "sha1 sums"
-    sha1deep  -r -i 4M  $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/* $EXAMINE_DIR/WINDOWS/system32/* > $TEMP/$SYSTEM.sha1sums
-    echo "ssdeep sums"
-    ssdeep -r $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/Local\ Settings/Temporary\ Internet\ Files/ $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/Local\ Settings/Temp/   $EXAMINE_DIR/WINDOWS/system32/ > $TEMP/$SYSTEM.ssdeep
-    7z a $IMAGE_DIR/$SYSTEM -mx=9 $TEMP/$SYSTEM.ssdeep $TEMP/$SYSTEM.md5sums  $TEMP/$SYSTEM.sha1sums
-    cp $TEMP/$SYSTEM.sha1sums /Data/hashes/endpoints
-    cp $TEMP/$SYSTEM.md5sums /Data/hashes/endpoints
-    cp $TEMP/$SYSTEM.ssdeep /Data/hashes/endpoints
+collect_info () {
+    echo "What is the name of the custodian?"
+    read CUSTODIAN
+    echo "What was the system type? (e.g. t420)"
+    read SYSTEM_TYPE
+    SYSTEM=$CUSTODIAN-$SYSTEM_TYPE
     }
 
 compare_hash () {
@@ -131,11 +66,57 @@ compare_hash () {
     7z a $IMAGE_DIR/$SYSTEM -mx=9 $TEMP/hash_match.log
     }
 
-archive () {      
-    echo "compress the image and associated files"
-    7z a $IMAGE_DIR/$SYSTEM -mx=9 -w$TEMP $TEMP/Manifest.lst $TEMP/$SYSTEM.log $TEMP/$SYSTEM.hlog $TEMP/$IMAGE
+create_manifest () {
+    echo -e "============================================\n" > $TEMP/Manifest.lst
+    echo -e "InfoSec automated examination script\n" >> $TEMP/Manifest.lst
+    echo -e "$SYSTEM \t $CASE_NAME \t $(date +%Y%m%d-%T)"  >> $IMAGE_REPOSITORY/inventory.txt
     }
 
+create_timeline () {
+    }
+
+eventLogs_WinXP () {
+echo "copy Windows XP event logs"
+cp $EXAMINE_DIR/WINDOWS/SYSTEM32/CONFIG/SecEvent.Evt $TEMP/$SYSTEM-SecEvent.Evt
+cp $EXAMINE_DIR/WINDOWS/SYSTEM32/CONFIG/SysEvent.Evt $TEMP/$SYSTEM-SysEvent.Evt
+cp $EXAMINE_DIR/WINDOWS/SYSTEM32/CONFIG/AppEvent.Evt $TEMP/$SYSTEM-AppEvent.Evt
+echo "compress logs"
+7z a $IMAGE_DIR/$SYSTEM -mx=9 $TEMP/*.Evt
+# copy logs to an FTP location 
+# echo "ftp logs"
+# ncftpput -u infosec -p 'password' hostname . $TEMP/*.Evt
+    }
+
+
+hash_files () {
+    echo "md5 sums"
+    md5deep -r -i 4M  $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/* $EXAMINE_DIR/WINDOWS/system32/* > $TEMP/$SYSTEM.md5sums
+    echo "sha1 sums"
+    sha1deep  -r -i 4M  $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/* $EXAMINE_DIR/WINDOWS/system32/* > $TEMP/$SYSTEM.sha1sums
+    echo "ssdeep sums"
+    ssdeep -r $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/Local\ Settings/Temporary\ Internet\ Files/ $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/Local\ Settings/Temp/   $EXAMINE_DIR/WINDOWS/system32/ > $TEMP/$SYSTEM.ssdeep
+    7z a $IMAGE_DIR/$SYSTEM -mx=9 $TEMP/$SYSTEM.ssdeep $TEMP/$SYSTEM.md5sums  $TEMP/$SYSTEM.sha1sums
+    cp $TEMP/$SYSTEM.sha1sums /Data/hashes/endpoints
+    cp $TEMP/$SYSTEM.md5sums /Data/hashes/endpoints
+    cp $TEMP/$SYSTEM.ssdeep /Data/hashes/endpoints
+    }
+
+
+scanimage () {
+#    echo "retrieve latest clam defs"
+#    freshclam
+    echo "scan the mounted image with available AV scanners"
+    if checkprogram clamscan; then
+	clamscan -r --infected --log=$TEMP/$SYSTEM-clam.log $EXAMINE_DIR
+    elif check program avgscan; then
+	avgscan -Hac --report=$TEMP/$SYSTEM-avg.log $EXAMINE_DIR
+    echo "compress the logs"
+    7z a $IMAGE_DIR/$SYSTEM -mx=9 $TEMP/$SYSTEM-clam.log $TEMP/$SYSTEM-avg.log
+    }
+
+
+# usage notice
+echo "Usage: review_drive.sh /path/to/raw_image.dd"
 # execute functions
 collect_info
 # mkdir -p $TEMP
