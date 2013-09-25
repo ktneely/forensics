@@ -1,0 +1,19 @@
+
+General
+=======
+Create better names for the various scripts
+
+review_drive
+============
+  - create a standardized archival location
+  - identify OS type
+  - fix the hashing section
+    - target specific directories based on OS type
+    - remove known good file hash values from storage
+    - Figure out a better place to store file hash collection
+  - automatically extract information from the timeline
+
+
+create_image
+============
+  - support unencrypted and filevault2 drives
