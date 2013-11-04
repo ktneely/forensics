@@ -5,7 +5,9 @@
 # TODO
 # - create handling for plain, bitlocker, and filevault drives
 # 0.2
-# ??
+# - handles unencrypted drives
+# - handles bitlocker drives
+# - creates hashes of the image and saves it to <IMAGENAME>-hash.log
 # 0.1
 # Simply a cut and paste from the previous do-everthing script. Probably doesn't work
 
@@ -31,11 +33,11 @@ collect_info () {
     CASE_NAME=${input_case:=}
     EXAMINE_DIR=$TEMP/examine
     mkdir -p $EXAMINE_DIR
-    echo "Enter the image repository. def: [/mnt/stor/Images]"
+    echo "Enter the image repository. def: [/Data/images]"
     read input_image
-    IMAGE_REPOSITORY=${input_image:=/Data/tmp}
+    IMAGE_REPOSITORY=${input_image:=/Data/images}
     IMAGE_DIR=$IMAGE_REPOSITORY/$CASE_NAME
-    echo "What is the decryption key?"
+    echo "What is the decryption key? (enter 'none' for no encryption"
     read DECRYPTION_KEY
     mkdir -p $TEMP
     mkdir -p $IMAGE_DIR
@@ -67,8 +69,14 @@ do
     if find $EXAMINE_DIR -maxdepth 0 -empty | read v;  # find an unused mount point
     then 
 	echo "empty examination directory found at /mnt/examine$i";
-	echo "$IMAGE"
-	bdemount -r $DECRYPTION_KEY $DEVICE $EXAMINE_DIR
+	echo "$IMAGE";
+	if [[ "$DECRYPTION_KEY" == "none" ]];
+	    then
+	    dc3dd if=$DEVICE of=$IMAGE_DIR/$IMAGE hash=md5 hash=sha1 hlog=/$IMAGE_DIR/$IMAGE-hash.log 
+	    else
+	    bdemount -r $DECRYPTION_KEY $DEVICE $EXAMINE_DIR
+	    dc3dd if=$EXAMINE_DIR/bde1 of=$IMAGE_DIR/$IMAGE hash=md5 hash=sha1 hlog=/$IMAGE_DIR/$IMAGE-hash.log 
+	fi
 	echo "Mounted $IMAGE at /mnt/examine$i" >> $TEMP/Manifest.lst
 	i=200;   # set i arbitrarily high to break the loop
     else 
@@ -81,5 +89,4 @@ done
 # begin main program
 collect_info
 mount_image
-dc3dd if=$EXAMINE_DIR/bde1 of=$IMAGE_DIR/$IMAGE
-umount $EXAMINE_DIR
+# umount $EXAMINE_DIR
