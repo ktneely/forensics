@@ -68,6 +68,10 @@ collect_info () {
     SYSTEM_TYPE=${system_model:=laptop}
     SYSTEM=$CUSTODIAN-$SYSTEM_TYPE
     TEMP=/Data/tmp/$SYSTEM
+    echo "What is the approximate start date/time of interest?  YYYY-MM-DD HH:MM:SS"
+    read start_time
+    echo "What is the approximate end date/time of interest?  YYYY-MM-DD HH:MM:SS"
+    read end_time
     }
 
 compare_hash () {
@@ -93,11 +97,11 @@ create_timeline () {
     echo -e "\n \n Examine system with plaso to create a timeline"
     echo -e "-------------------------------------------------\n"
     if check_program log2timeline; then
-	log2timeline -p $TEMP/$SYSTEM-timeline.zip $EXAMINE_DIR
+	log2timeline -i $TEMP/$SYSTEM-timeline.zip $IMAGE
 	echo -e "$SYSTEM-timeline.zip\n" >> $TEMP/Manifest.lst
+	pinfo $TEMP/$SYSTEM >> $TEMP/Manifest.lst
+	echo -e "\n \n \n" >> $TEMP/Manifest.lst
     else echo "!!log2timeline not found. Please install plaso and log2timeline!!"
-# perform some extracts
-psort $TEMP/$SYSTEM-timeline.zip "parser is 'FirefoxHistoryParser' and message contains 'url: http' and message contains not 'bookmark'" -w $TEMP/$SYSTEM-firefox_urls.txt
     fi
 }
 
@@ -120,22 +124,16 @@ eventlogs_Win7 () {   # should consolodate these into one
 
 hash_files () {
 # This section needs some work.  
-# TODO:
-  # identify system type
-  # create hashes according to OS location (XP, Win7, 8, etc.)
-  # compare against known-good (and ignore those)
-  # compare against known-bad (and generate an alert)
-  # look into some sleuthkit integration for above two
-  # place results in a common data storage location
     echo "Record hash values of interesting file system areas" >> $TEMP/Manifest.lst
     if check_program md5deep; then
 	echo "create md5 sums"  >> $TEMP/Manifest.lst
 	echo "---------------" >> $TEMP/Manifest.lst
 	md5deep -r -i 4M $EXAMINE_DIR/Windows/System32/* > $TEMP/$SYSTEM.md5sums
+	echo "md5 sums written to $SYSTEM.MD5SUMS"  >> $TEMP/Manifest.lst
     else echo "!!md5deep not found, please install!!"
+    fi
 #   md5deep -r -i 4M  $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/* $EXAMINE_DIR/WINDOWS/system32/* > $TEMP/$SYSTEM.md5sums
-    echo "md5 sums written to $SYSTEM.MD5SUMS"  >> $TEMP/Manifest.lst
-    echo "sha1 sums" >> $TEMP/Manifest.lst
+#    echo "sha1 sums" >> $TEMP/Manifest.lst
 #    sha1deep  -r -i 4M  $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/* $EXAMINE_DIR/WINDOWS/system32/* > $TEMP/$SYSTEM.sha1sums
 #    echo "ssdeep sums" >> $TEMP/Manifest.lst
 #    ssdeep -r $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/Local\ Settings/Temporary\ Internet\ Files/ $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/Local\ Settings/Temp/   $EXAMINE_DIR/WINDOWS/system32/ > $TEMP/$SYSTEM.ssdeep
@@ -158,8 +156,8 @@ do
 	echo "empty examination directory found at /mnt/examine$i";
 	echo "$IMAGE"
 	mount -o ro,loop $IMAGE /mnt/examine$i; # mount the image read-only
-	i=200;   # set i arbitrarily high to break the loop
 	echo "Mounted $IMAGE at /mnt/examine$i" >> $TEMP/Manifest.lst
+	i=200;   # set i arbitrarily high to break the loop
     else 
 	echo "Mounting $IMAGE at /mnt/examine$i failed" 
     fi
@@ -169,9 +167,13 @@ done
 
 scanimage () {
     echo -e "\n \n Scan the mounted image with available AV scanners" >> $TEMP/Manifest.lst
-    echo -e "----------------------------------------------------\n"
+    echo -e "----------------------------------------------------\n" >>  $TEMP/Manifest.lst
+    echo -e "Creating $TEMP/malware for storage of infected files\n" >>  $TEMP/Manifest.lst
+	mkdir -p $TEMP/malware
     if check_program clamscan; then
-	clamscan -r --infected --log=$TEMP/$SYSTEM-clam.log $EXAMINE_DIR
+	echo "starting ClamAV scan" >>  $TEMP/Manifest.lst
+	clamscan -r --infected --copy=$TEMP/malware --log=$TEMP/$SYSTEM-clam.log $EXAMINE_DIR
+	cat $TEMP/$SYSTEM-clam.log >>  $TEMP/Manifest.lst
 	echo "clamAV scan complete" >> $TEMP/Manifest.lst
     elif check_program avgscan; then
 	echo "starting AVG scan" >> $TEMP/Manifest.lst
@@ -179,7 +181,7 @@ scanimage () {
 	echo "AVG scan complete"  >> $TEMP/Manifest.lst
     elif check_program fpscan; then
 	echo "starting F-prot scan" >> $TEMP/Manifest.lst
-	fpscan --report --adware --applications --output=$TEMP/$SYSTEM-fp.log $EXAMINE_DIR;
+	/opt/f-prot/fpscan --report --adware --applications -u 3 -s 3 --output=$TEMP/$SYSTEM-fp.log $EXAMINE_DIR;
 	echo "F-prot scan complete"  >> $TEMP/Manifest.lst;
 #    echo "compress the logs" >> $TEMP/Manifest.lst
 #    7z a $IMAGE_DIR/$SYSTEM -mx=9 $TEMP/$SYSTEM-clam.log $TEMP/$SYSTEM-avg.log $TEMP/$SYSTEM-fp.log
@@ -192,6 +194,7 @@ timeline_review () {
 # ask the examiner for the date & time of interest 
   # extract events around the time of interest
     echo " "
+    psort -t "$start_time" -T "$end_time" -o L2tcsv -w $TEMP/$SYSTEM-timeline_review.csv 
 }
 
 ###
@@ -222,7 +225,8 @@ echo "make manifest"
 create_manifest
 echo "mount image"
 mount_image
-# eventLogs  # copy the event logs to 
+# eventLogs 
+eventLogs_WinXP
 hash_files # create hash of temp and sys32 files
 # compare_hash # check generated hashes against known bad files
 scanimage  # scan the image with AV scanners

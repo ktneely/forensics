@@ -5,13 +5,16 @@ Create better names for the various scripts
 
 review_drive
 ============
+  - add an external config directory for default locations
   - create a standardized archival location
+  - create a standardized malware archival location
   - identify OS type
   - fix the hashing section
     - target specific directories based on OS type
     - remove known good file hash values from storage
     - Figure out a better place to store file hash collection
   - automatically extract information from the timeline
+  - use of Yara signatures
 
 
 create_image

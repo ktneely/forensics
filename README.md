@@ -38,7 +38,7 @@ Optional
 These are not strictly required, but highly recommended
  - ClamAV
  - AVG (http://free.avg.com/us-en/download-free-all-product)
- - f-prot
+ - f-prot (installed under /opt/f-prot)
 
 
 How it works

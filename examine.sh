@@ -1,5 +1,9 @@
 #!/bin/sh
 ###
+#
+#  THIS SCRIPT HAS BEEN DEPRECATED IN FAVOR OF 'review_drive.sh'!!
+#
+###
 # This script expects to be run as root
 #
 # Usage: examine.sh <device> <custodian> <system_type> <FTP password>
