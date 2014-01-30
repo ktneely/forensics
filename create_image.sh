@@ -72,10 +72,16 @@ do
 	echo "$IMAGE";
 	if [[ "$DECRYPTION_KEY" == "none" ]];
 	    then
-	    dc3dd if=$DEVICE of=$IMAGE_DIR/$IMAGE hash=md5 hash=sha1 hlog=/$IMAGE_DIR/$IMAGE-hash.log 
+	    if check_program dc3dd; then
+		dc3dd if=$DEVICE of=$IMAGE_DIR/$IMAGE hash=md5 hash=sha1 hlog=/$IMAGE_DIR/$IMAGE-hash.log 
+		else dd if=$DEVICE of=$IMAGE_DIR/$IMAGE
+	    fi
 	    else
 	    bdemount -r $DECRYPTION_KEY $DEVICE $EXAMINE_DIR
-	    dc3dd if=$EXAMINE_DIR/bde1 of=$IMAGE_DIR/$IMAGE hash=md5 hash=sha1 hlog=/$IMAGE_DIR/$IMAGE-hash.log 
+	    if check_program dc3dd; then
+		dc3dd if=$EXAMINE_DIR/bde1 of=$IMAGE_DIR/$IMAGE hash=md5 hash=sha1 hlog=/$IMAGE_DIR/$IMAGE-hash.log 
+		else dd if=$EXAMINE_DIR/bde1 of=$IMAGE_DIR/$IMAGE
+	    fi
 	fi
 	echo "Mounted $IMAGE at /mnt/examine$i" >> $TEMP/Manifest.lst
 	i=200;   # set i arbitrarily high to break the loop
@@ -89,4 +95,5 @@ done
 # begin main program
 collect_info
 mount_image
+umount /mnt/examine$i
 # umount $EXAMINE_DIR
