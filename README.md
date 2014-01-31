@@ -8,12 +8,14 @@ For the scipts in this directory, where it makes sense (and as I update them), I
 /Data  	       	       		<---- the parent of all your collected data
  |---Forensics			<---- parent of forensics activities
      |---Case Identifier	<---- some number or name for the case
-     	 |---Images		<---- disk images and raw evidence data
-	 |---Analysis		<---- output of tools and notes
- |---Hashes			<---- storage of various hash databases
-     |---NSRL			<---- storage for the NSRL data files
-     |---Malware		<---- storage for malware hashes
+     	 |---images		<---- disk images and raw evidence data
+	 |---analysis		<---- output of tools and notes
+	 |---malware		<---- discovered malicious code samples
+ |---Hashes			<---- various hash databases
+     |---NSRL			<---- NSRL data files storage
+     |---Malware		<---- malware hash files
  |---Wordlists			<---- dictionaries and password wordlists
+ |---Malware			<---- malware samples repository
 
 create_image 
 ============ 
@@ -65,6 +67,10 @@ How it works
 This script simply automates a number of tasks you would perform anyway in order to examine a disk image or preserve data for later review or outside consultants at such a time you realize that system you ignored became interesting due to new information.
 
 The functions are in alphabetical order.
+
+Enviro-prep
+===========
+A laughable script that helps to prepare your environment.
 
 NSRL fetch
 ==========
