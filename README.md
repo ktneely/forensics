@@ -1,8 +1,27 @@
 Description of the scripts in this directory
 
-create_image
-============
-Create image is a shell script to prompt for some relevant categorical metadata regarding a physical storage device.  It takes this information to add to an disk inventory and create a forensic image of the device to be used for further analysis.
+General
+=======
+
+For the scipts in this directory, where it makes sense (and as I update them), I have devised the following common directory path for the output 
+
+/Data  	       	       		<---- the parent of all your collected data
+ |---Forensics			<---- parent of forensics activities
+     |---Case Identifier	<---- some number or name for the case
+     	 |---Images		<---- disk images and raw evidence data
+	 |---Analysis		<---- output of tools and notes
+ |---Hashes			<---- storage of various hash databases
+     |---NSRL			<---- storage for the NSRL data files
+     |---Malware		<---- storage for malware hashes
+ |---Wordlists			<---- dictionaries and password wordlists
+
+create_image 
+============ 
+
+Create image is a shell script to prompt for
+some relevant categorical metadata regarding a physical storage
+device.  It takes this information to add to an disk inventory and
+create a forensic image of the device to be used for further analysis.
 
 Currently, the script is tailored for Windows bitlocker drives only and requires libbde:  https://code.google.com/p/libbde
 
