@@ -28,15 +28,14 @@ collect_info () {
     read temp_space
     TEMP=${temp_space:=/Data/tmp/$SYSTEM}
     IMAGE=$SYSTEM.dd
-    echo "Enter the case identifier. (def: [2011-04-07a-crypto]"
+    echo "Enter the case identifier. (def: [new_case]"
     read input_case
-    CASE_NAME=${input_case:=}
+    CASE_NAME=${input_case:=new_case}
     EXAMINE_DIR=$TEMP/examine
     mkdir -p $EXAMINE_DIR
-    echo "Enter the image repository. def: [/Data/images]"
+    echo "Enter the image repository. def: [/Data/Forensics/$CASE_NAME/images]"
     read input_image
-    IMAGE_REPOSITORY=${input_image:=/Data/images}
-    IMAGE_DIR=$IMAGE_REPOSITORY/$CASE_NAME
+    IMAGE_DIR=${input_image:=/Data/Forensics/$CASE_NAME/images}
     echo "What is the decryption key? (enter 'none' for no encryption"
     read DECRYPTION_KEY
     mkdir -p $TEMP
