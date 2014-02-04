@@ -11,6 +11,7 @@ For the scipts in this directory, where it makes sense (and as I update them), I
      	 |---images		<---- disk images and raw evidence data
 	 |---analysis		<---- output of tools and notes
 	 |---malware		<---- discovered malicious code samples
+	 |---logs		<---- other supporting logs (e.g. network traffic)
  |---Hashes			<---- various hash databases
      |---NSRL			<---- NSRL data files storage
      |---Malware		<---- malware hash files
