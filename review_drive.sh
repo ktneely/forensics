@@ -187,7 +187,7 @@ done
 scanimage () {
     echo -e "\n \n Scan the mounted image with available AV scanners" >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
     echo -e "----------------------------------------------------\n" >>  $ANALYSIS_DIR/$SYSTEM-Manifest.lst
-    echo -e "Creating $ANALYSIS_DIR/malware for storage of infected files\n" >>  $ANALYSIS_DIR/$SYSTEM-Manifest.lst
+    echo -e "Creating $FORENSICS_DIR/malware for storage of infected files\n" >>  $FORENSICS_DIR/$SYSTEM-Manifest.lst
 	mkdir -p $ANALYSIS_DIR/malware
     if check_program clamscan; then
 	echo "starting ClamAV scan" >>  $ANALYSIS_DIR/$SYSTEM-Manifest.lst
