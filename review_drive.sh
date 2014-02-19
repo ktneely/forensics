@@ -86,6 +86,7 @@ collect_info () {
 
 compare_hash () {
     # compare the hashes against known files.  This needs a re-write and not currently called by the main program
+    # NEEDS SOME SERIOUS REWORK
     # compare MD5
     echo "checking for md5deep matches"
     echo -e "MD5sum matches: \n" > $ANALYSIS_DIR/hash_match.log >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
@@ -187,7 +188,7 @@ done
 scanimage () {
     echo -e "\n \n Scan the mounted image with available AV scanners" >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
     echo -e "----------------------------------------------------\n" >>  $ANALYSIS_DIR/$SYSTEM-Manifest.lst
-    echo -e "Creating $FORENSICS_DIR/malware for storage of infected files\n" >>  $FORENSICS_DIR/$SYSTEM-Manifest.lst
+    echo -e "Creating $FORENSICS_DIR/malware for storage of infected files\n" >>  $ANALYSIS_DIR/$SYSTEM-Manifest.lst
 	mkdir -p $ANALYSIS_DIR/malware
     if check_program clamscan; then
 	echo "starting ClamAV scan" >>  $ANALYSIS_DIR/$SYSTEM-Manifest.lst
