@@ -189,23 +189,26 @@ scanimage () {
     echo -e "\n \n Scan the mounted image with available AV scanners" >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
     echo -e "----------------------------------------------------\n" >>  $ANALYSIS_DIR/$SYSTEM-Manifest.lst
     echo -e "Creating $FORENSICS_DIR/malware for storage of infected files\n" >>  $ANALYSIS_DIR/$SYSTEM-Manifest.lst
-	mkdir -p $ANALYSIS_DIR/malware
+    mkdir -p $ANALYSIS_DIR/malware
     if check_program clamscan; then
 	echo "starting ClamAV scan" >>  $ANALYSIS_DIR/$SYSTEM-Manifest.lst
 	clamscan -r --infected --copy=$ANALYSIS_DIR/malware --log=$ANALYSIS_DIR/$SYSTEM-clam.log $EXAMINE_DIR
 	cat $ANALYSIS_DIR/$SYSTEM-clam.log >>  $ANALYSIS_DIR/$SYSTEM-Manifest.lst
 	echo "clamAV scan complete" >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
-    elif check_program avgscan; then
+    else echo "clamAV scanner not found"  >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
+    fi
+    if check_program avgscan; then
 	echo "starting AVG scan" >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
 	avgscan -Hac --report=$ANALYSIS_DIR/$SYSTEM-avg.log $EXAMINE_DIR
 	echo "AVG scan complete"  >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
-    elif check_program fpscan; then
+    else echo "AVG scanner now found"  >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
+    fi
+    if check_program fpscan; then
 	echo "starting F-prot scan" >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
 	/opt/f-prot/fpscan --report --adware --applications -u 3 -s 3 --output=$ANALYSIS_DIR/$SYSTEM-fp.log $EXAMINE_DIR;
 	echo "F-prot scan complete"  >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst;
-#    echo "compress the logs" >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
-#    7z a $IMAGE_DIR/$SYSTEM -mx=9 $ANALYSIS_DIR/$SYSTEM-clam.log $ANALYSIS_DIR/$SYSTEM-avg.log $ANALYSIS_DIR/$SYSTEM-fp.log
-   fi
+    else echo "F-prot scanner not found"  >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
+    fi
     }
 
 timeline_review () {
