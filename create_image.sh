@@ -1,9 +1,15 @@
 #! /bin/bash
 
 # A script to create an image of a drive, stolen from the review_drive script
-# Version 0.2-beta
+# Version 0.3-beta
 # TODO
-# - create handling for plain, bitlocker, and filevault drives
+# - create handling for filevault drives
+# - make archival optional
+# 0.3
+# - Added an archive destination
+#     This stores a compressed copy of the image in a specified
+#     archive location
+# - Archives default to 7zip but fall-back to gzip
 # 0.2
 # - handles unencrypted drives
 # - handles bitlocker drives
@@ -36,6 +42,9 @@ collect_info () {
     echo "Enter the image repository. def: [/Data/Forensics/$CASE_NAME/images]"
     read input_image
     IMAGE_DIR=${input_image:=/Data/Forensics/$CASE_NAME/images}
+    echo "Enter the location for archives. def [/Data/archive/$CASE_NAME]"
+    read input_archive
+    ARCHIVE_DIR=${input_archive:=/Data/archive/$CASE_NAME}
     echo "What is the decryption key? (enter 'none' for no encryption"
     read DECRYPTION_KEY
     mkdir -p $TEMP
@@ -91,8 +100,20 @@ done
     }
 
 
+archive () {
+# creates a compressed copy of the image for archival purposes
+# uses defined $TEMP for temp space then copies to $ARCHIVE/$SYSTEM.7z
+mkdir -p $ARCHIVE/$SYSTEM
+if check_program 7z; then
+    7z a -w$TEMP -mx=9 $ARCHIVE/$SYSTEM.7z $IMAGE_DIR/$IMAGE
+    else
+    gzip -c $IMAGE_DIR/$IMAGE > $ARCHIVE/$SYSTEM.gz
+fi
+}
+
 # begin main program
 collect_info
 mount_image
 umount /mnt/examine$i
+archive
 # umount $EXAMINE_DIR
