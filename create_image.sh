@@ -5,17 +5,22 @@
 # TODO
 # - create handling for filevault drives
 # - make archival optional
+# - rename the mount_image function to 
 # 0.3
 # - Added an archive destination
 #     This stores a compressed copy of the image in a specified
 #     archive location
 # - Archives default to 7zip but fall-back to gzip
+# - Inventory file created & updated on archive location
+# - Considerably lowered 7z compression level
+# - modified many defaults for more streamlined workflow
 # 0.2
 # - handles unencrypted drives
 # - handles bitlocker drives
 # - creates hashes of the image and saves it to <IMAGENAME>-hash.log
 # 0.1
-# Simply a cut and paste from the previous do-everthing script. Probably doesn't work
+# Simply a cut and paste of the image creation routines from the previous 
+#    do-everthing script. Probably doesn't work
 
 
 # Functions
@@ -34,9 +39,10 @@ collect_info () {
     read temp_space
     TEMP=${temp_space:=/Data/tmp/$SYSTEM}
     IMAGE=$SYSTEM.dd
-    echo "Enter the case identifier. (def: [new_case]"
+    echo "Enter the case identifier. (def: W-temp `date +%Y-%m-%da`)"
     read input_case
-    CASE_NAME=${input_case:=new_case}
+#    CASE_NAME=${input_case:=`date +%Y-%m-%da`}
+    CASE_NAME=${input_case:=WSGR-SEC-01}
     EXAMINE_DIR=$TEMP/examine
     mkdir -p $EXAMINE_DIR
     echo "Enter the image repository. def: [/Data/Forensics/$CASE_NAME/images]"
@@ -45,8 +51,9 @@ collect_info () {
     echo "Enter the location for archives. def [/Data/archive/$CASE_NAME]"
     read input_archive
     ARCHIVE_DIR=${input_archive:=/Data/archive/$CASE_NAME}
-    echo "What is the decryption key? (enter 'none' for no encryption"
-    read DECRYPTION_KEY
+    echo "What is the decryption key? (def: 'none' for no encryption)"
+    read input_key
+    DECRYPTION_KEY=${input_key:=none}
     mkdir -p $TEMP
     mkdir -p $IMAGE_DIR
     }
@@ -86,12 +93,12 @@ do
 	    fi
 	    else
 	    bdemount -r $DECRYPTION_KEY $DEVICE $EXAMINE_DIR
+	    echo "Mounted $IMAGE at /mnt/examine$i" >> $TEMP/Manifest.lst
 	    if check_program dc3dd; then
 		dc3dd if=$EXAMINE_DIR/bde1 of=$IMAGE_DIR/$IMAGE hash=md5 hash=sha1 hlog=/$IMAGE_DIR/$IMAGE-hash.log 
 		else dd if=$EXAMINE_DIR/bde1 of=$IMAGE_DIR/$IMAGE
 	    fi
 	fi
-	echo "Mounted $IMAGE at /mnt/examine$i" >> $TEMP/Manifest.lst
 	i=200;   # set i arbitrarily high to break the loop
     else 
 	echo "Mounting $IMAGE at /mnt/examine$i failed" 
@@ -99,21 +106,31 @@ do
 done
     }
 
-
 archive () {
 # creates a compressed copy of the image for archival purposes
-# uses defined $TEMP for temp space then copies to $ARCHIVE/$SYSTEM.7z
-mkdir -p $ARCHIVE/$SYSTEM
+# uses defined $TEMP for temp space then copies to $ARCHIVE_DIR/$SYSTEM.7z
 if check_program 7z; then
-    7z a -w$TEMP -mx=9 $ARCHIVE/$SYSTEM.7z $IMAGE_DIR/$IMAGE
+    7z a -w$TEMP -mx=4 -m0=lzma2 $ARCHIVE_DIR/$SYSTEM.7z $IMAGE_DIR/$IMAGE $IMAGE_DIR/$IMAGE-hash.log
     else
-    gzip -c $IMAGE_DIR/$IMAGE > $ARCHIVE/$SYSTEM.gz
+    gzip -c $IMAGE_DIR/$IMAGE > $ARCHIVE_DIR/$SYSTEM.gz
 fi
 }
+
+inventory () {   # adds a line to the inventory file on the archive destination
+if [ -f "$ARCHIVE_DIR/inventory.txt" ]
+    then
+   echo -e "`date +%Y/%m/%d`, $CASE_NAME, $CUSTODIAN, $SYSTEM_TYPE" >> $ARCHIVE_DIR/inventory.txt
+else
+   echo -e "Date, Case Number, Custodian, System, File Location" > $ARCHIVE_DIR/inventory.txt
+   echo -e "`date +%Y/%m/%d`, $CASE_NAME, $CUSTODIAN, $SYSTEM_TYPE, $ARCHIVE_DIR/$SYSTEM.7z" >> $ARCHIVE_DIR/inventory.txt
+fi
+}
+
 
 # begin main program
 collect_info
 mount_image
 umount /mnt/examine$i
 archive
-# umount $EXAMINE_DIR
+inventory
+

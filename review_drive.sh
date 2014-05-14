@@ -27,21 +27,18 @@
 # 0.1 Initial Version
 #  - makes image with dc3dd to temp location (if available, else dd)
 #  - mounts the image read-only
-#  - extracts event logs & FTPs to Splunk server
+#  - extracts event logs 
 #  - creates hash values of interesting files
 #  - scans drive with clamscan
 #  - compresses image and logs into a single file on storage location
 #
 # -= Usage=-
-# Usage: review_drive.sh </path/to/mount>
-# Example: examine.sh /dev/sdd1 ktneely t43 /mnt/images examine1
+# Usage: review_drive.sh </path/to/block device>
+# Example: examine.sh /Data/case1/images/laptop.dd
 #
 # Requirements:
 # To run the script, create the following setup on your system:
-# Directory structure
-# /Data  - minimum 2TB if you will perform multiple acquisitions or
-#large drives
-# /Data/hashes  - location of your good and bad hash databases
+# Directory structure as defined in the readme
 # Plaso (log2timeline) $git clone https://code.google.com/p/plaso/
 # 
 ###
@@ -131,9 +128,6 @@ cp $EXAMINE_DIR/WINDOWS/SYSTEM32/CONFIG/SysEvent.Evt $ANALYSIS_DIR/$SYSTEM-SysEv
 cp $EXAMINE_DIR/WINDOWS/SYSTEM32/CONFIG/AppEvent.Evt $ANALYSIS_DIR/$SYSTEM-AppEvent.Evt
 echo "compress logs"
 #7z a $IMAGE_DIR/$SYSTEM -mx=9 $ANALYSIS_DIR/*.Evt
-# copy logs to an FTP location 
-# echo "ftp logs"
-# ncftpput -u infosec -p 'password' hostname . $ANALYSIS_DIR/*.Evt
     }
 
 eventlogs_Win7 () {   # should consolodate these into one
