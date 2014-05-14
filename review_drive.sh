@@ -113,9 +113,9 @@ create_timeline () {
     echo -e "\n \n Examine system with plaso to create a timeline"
     echo -e "-------------------------------------------------\n"
     if check_program log2timeline; then
-	log2timeline -i $ANALYSIS_DIR/$SYSTEM-timeline.zip $IMAGE
+	log2timeline.py -i $ANALYSIS_DIR/$SYSTEM-timeline.zip $IMAGE
 	echo -e "$SYSTEM-timeline.zip\n" >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
-	pinfo $ANALYSIS_DIR/$SYSTEM-timeline.zip >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
+	pinfo.py $ANALYSIS_DIR/$SYSTEM-timeline.zip >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
 	echo -e "\n \n \n" >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
     else echo "!!log2timeline not found. Please install plaso and log2timeline!!"
     fi
@@ -211,8 +211,8 @@ timeline_review () {
 # ask the examiner for the date & time of interest 
   # extract events around the time of interest
     echo " "
-    psort --slice "$event_time" --slice_size 10 -o L2tcsv -w $ANALYSIS_DIR/$SYSTEM-timeline_hits.csv $ANALYSIS_DIR/$SYSTEM-timeline.zip >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
-    psort -o L2tcsv -w $ANALYSIS_DIR/$SYSTEM-timeline_hits.csv $ANALYSIS_DIR/$SYSTEM-timeline.zip "parser is 'WinJobParser'" |grep -v Google >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
+    psort.py --slice "$event_time" --slice_size 10 -o L2tcsv -w $ANALYSIS_DIR/$SYSTEM-timeline_hits.csv $ANALYSIS_DIR/$SYSTEM-timeline.zip >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
+    psort.py -o L2tcsv -w $ANALYSIS_DIR/$SYSTEM-timeline_hits.csv $ANALYSIS_DIR/$SYSTEM-timeline.zip "parser is 'WinJobParser'" |grep -v Google >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
 }
 
 ###
