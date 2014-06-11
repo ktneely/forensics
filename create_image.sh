@@ -41,10 +41,9 @@ collect_info () {
     read temp_space
     TEMP=${temp_space:=/Data/tmp/$SYSTEM}
     IMAGE=$SYSTEM.dd
-    echo "Enter the case identifier. (def: W-temp `date +%Y-%m-%da`)"
+    echo "Enter the case identifier. (def: `date +%Y-%m-%da`)"
     read input_case
-#    CASE_NAME=${input_case:=`date +%Y-%m-%da`}
-    CASE_NAME=${input_case:=WSGR-SEC-01}
+    CASE_NAME=${input_case:=`date +%Y-%m-%da`}
     EXAMINE_DIR=$TEMP/examine
     echo "Enter the image repository. (def: [/Data/Forensics/$CASE_NAME/images])"
     read input_image
