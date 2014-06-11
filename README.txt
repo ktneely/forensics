@@ -21,6 +21,9 @@ For the scipts in this directory, where it makes sense (and as I update them), I
  |---Wordlists			<---- dictionaries and password wordlists
 
 
+copy_evidence
+=============
+Copies evidence files in a directory, adds them to the evidence file
 
 create_image 
 ============ 
