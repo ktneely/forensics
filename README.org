@@ -10,7 +10,7 @@
 ** Directory structure
   For the scipts in this directory, where it makes sense (and as I update them), I have devised the following common directory path for the output 
 
-=verbatim=
+#+BEGIN_EXAMPLE
 /Data  	       	       		<---- the parent of all your collected data
  |---Archive			<---- Archive location for long-term storage
      |---Case Identifier	<---- some number or name for the case
@@ -30,7 +30,7 @@
      |---Malware		<---- malware hash files
  |---Malware			<---- malware samples repository
  |---Wordlists			<---- dictionaries and password wordlists
-=verbatim=
+#+END_EXAMPLE
 -----------
 ** Script Descriptions
 *** copy_evidence
@@ -91,8 +91,8 @@ Just to see how a table renders:
 * Footnotes
 
 [1] on Debian, you need to use testing repo
-   - add 'deb http://ftp.debian.org/debian testing main' to apt sources
-   - run 'apt-get -t testing install libc6-amd64 libc6-dev libc6-dbg'
+   - add =deb http://ftp.debian.org/debian testing main= to apt sources
+   - run =apt-get -t testing install libc6-amd64 libc6-dev libc6-dbg=
 
 
 
