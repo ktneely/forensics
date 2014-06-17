@@ -1,11 +1,10 @@
 #! /bin/bash
 
 # A script to create an image of a drive, stolen from the review_drive script
-# Version 0.3-beta
-# TODO
-# - create handling for filevault drives
-# - make archival optional
-# - rename the mount_image function to 
+# Version 0.3
+#
+# CHANGELOG
+#
 # 0.3
 # - Added an archive destination
 #     This stores a compressed copy of the image in a specified
@@ -15,6 +14,8 @@
 # - Physical drive and logical partition info added to log file
 # - Considerably lowered 7z compression level
 # - modified many defaults for more streamlined workflow
+# - added Checksum field to inventory; Image sum is already stored in log
+# - images now archived to images subdirectory
 # 0.2
 # - handles unencrypted drives
 # - handles bitlocker drives
@@ -56,6 +57,7 @@ collect_info () {
     DECRYPTION_KEY=${input_key:=none}
     mkdir -p $TEMP
     mkdir -p $IMAGE_DIR
+    mkdir -p $ARCHIVE_DIR/Images
     }
 
 
@@ -108,11 +110,11 @@ done
 
 archive () {
 # creates a compressed copy of the image for archival purposes
-# uses defined $TEMP for temp space then copies to $ARCHIVE_DIR/$SYSTEM.7z
+# uses defined $TEMP for temp space then copies to $ARCHIVE_DIR/Images/$SYSTEM.7z
 if check_program 7z; then
-    7z a -w$TEMP -mx=4 -m0=lzma2 $ARCHIVE_DIR/$SYSTEM.7z $IMAGE_DIR/$IMAGE $IMAGE_DIR/$IMAGE-info.log
+    7z a -w$TEMP -mx=4 -m0=lzma2 $ARCHIVE_DIR/Images/$SYSTEM.7z $IMAGE_DIR/$IMAGE $IMAGE_DIR/$IMAGE-info.log
     else
-    gzip -c $IMAGE_DIR/$IMAGE > $ARCHIVE_DIR/$SYSTEM.gz
+    gzip -c $IMAGE_DIR/$IMAGE > $ARCHIVE_DIR/Images/$SYSTEM.gz
 fi
 }
 
@@ -127,10 +129,10 @@ hdparm -I $DEVICE >> $IMAGE_DIR/$IMAGE-info.log
 inventory () {   # adds a line to the inventory file on the archive destination
 if [ -f "$ARCHIVE_DIR/../inventory.txt" ]
     then
-    echo -e "`date +%Y/%m/%d`,$CASE_NAME,$CUSTODIAN,$SYSTEM_TYPE,$CASE_NAME/$SYSTEM.7z" >> $ARCHIVE_DIR/../inventory.txt
+    echo -e "`date +%Y/%m/%d`,$CASE_NAME,$CUSTODIAN,$SYSTEM_TYPE,$CASE_NAME/Images/$SYSTEM.7z,see log" >> $ARCHIVE_DIR/../inventory.txt
 else
-    echo -e "Date,Case Number,Custodian,System,File Location" > $ARCHIVE_DIR/../inventory.txt
-    echo -e "`date +%Y/%m/%d`,$CASE_NAME,$CUSTODIAN,$SYSTEM_TYPE,$CASE_NAME/$SYSTEM.7z" >> $ARCHIVE_DIR/../inventory.txt
+    echo -e "Date,Case Number,Custodian,System,File Location,Checksum" > $ARCHIVE_DIR/../inventory.txt
+    echo -e "`date +%Y/%m/%d`,$CASE_NAME,$CUSTODIAN,$SYSTEM_TYPE,$CASE_NAME/Images/$SYSTEM.7z,see log" >> $ARCHIVE_DIR/../inventory.txt
 fi
 }
 
