@@ -33,8 +33,8 @@ copy_and_log () {
     for f in $1/* ; do
     if [ -f "$f" ]; then  # progress through all files in the dir
 	F_MD5SUM=`md5deep -b $f |awk '{print $1}'`    # calc md5 of original
-	cp $f $ARCHIVE_DIR          # copy each file
-	C_MD5SUM=`md5deep -b $ARCHIVE_DIR/${f##*/} |awk '{print $1}'` # calc md5 of copy
+	cp "$f" $ARCHIVE_DIR          # copy each file
+	C_MD5SUM=`md5deep -b $ARCHIVE_DIR/"${f##*/}" |awk '{print $1}'` # calc md5 of copy
 	if [ "$F_MD5SUM" == "$C_MD5SUM" ]; then
 	    if [ -f "$ARCHIVE_DIR/../../inventory.txt" ]; then
 		echo -e "`date +%Y/%m/%d`,$CASE_NAME,"",$EVIDENCE_TYPE,$CASE_NAME/$EVIDENCE_TYPE/${f##*/},$F_MD5SUM" >> $ARCHIVE_DIR/../../inventory.txt
@@ -44,7 +44,7 @@ copy_and_log () {
 	    fi
 	fi	
     else
-	echo "Failed on $f"
+	echo "Failed on '$f'"
 	exit 1
     fi
     done
