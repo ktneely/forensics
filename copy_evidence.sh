@@ -45,6 +45,7 @@ copy_and_log () {
 	fi	
     else
 	echo "Failed on '$f'"
+	rm $ARCHIVE_DIR/"$f"
 	exit 1
     fi
     done
