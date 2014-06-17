@@ -1,69 +1,69 @@
-TODO and done items for Forensics and eDiscovery scripts
-
-* Version 0.5
-** General
-*** Features
-**** TODO Case metadata persistence
-     Remember some attributes of a case and use them as defaults
-**** TODO Configuration File
-     Currently, the default locations are hard-coded.  Provide the ability for the end-user to specify these defaults in a specific file
-*** Analyze image
-**** Bugs
+* Forensics and eDiscovery scripts Changelog
+  This file describes completed and planned changes for the various scripts in this directory
+** Version 0.5
+*** General
 **** Features
-***** TODO YARA integration
-* Version 0.4
-** Analyze image (analyze_image.sh)
-*** Structure 
-*** Features
-**** Identify OS type
-***** TODO Windows 7
-***** TODO Windows 8
-***** TODO MacOSX
-**** Hashing
-***** TODO Target specific directories based on OS type
-***** TODO (option to) remove known good files (based on hash) from archived storage
-***** TODO Review the Hashing structure
-***** TODO Add to hash directories automatically
-**** Timeline
-** Create image (create_image.sh)
-*** Structure
-*** Features
-** Copy Evidence (copy_evidence.sh)
-*** Bugs
-**** TODO Needs to handle situation where a file already exists at destination
-** NSRL (nsrl_fetch.sh)
-*** TODO Get the script working to download initial content
-** Readme file
-*** TODO Migrate to Emacs Org format
-* Version 0.3
-  This is really the first "version" where most of the scripts are in working order
-** Analyze image (review_drive.sh)
-*** Structure
-**** TODO rename from review_drive.sh to analyze_image.sh
-**** TODO change destination and working directories to start with capital letters
-**** DONE changed from '/bin/sh' to '/bin/bash' for processing
-**** DONE remove the image section to a different script
-*** Features
-  - added log2timeline/plaso
-  - added checks for AVG, f-prot, & Clam (current Clam options require 0.98
-  - Manifest collects more information about tasks
-  - re-worked the directory structure
-  - added some supporting documentation created at run-time
-** Create image (create_image.sh)
-*** Bugs
-**** TODO Fix file-handling to deal with spaces in filenames
-*** Structure
-**** DONE Add an archive destination
-     - This stores a compressed copy of the image in a specified archive location
-     - Archives default to 7zip but fall-back to gzip
-*** Features
-**** DONE Inventory file
-     - tracks images created
-     - updates file archive location
-**** DONE Drive information
-     - Physical drive and logical partition info collected
-     - information is added to log file
-     - Considerably lowered 7z compression level
-     - modified many defaults for more streamlined workflow
-     - added Checksum field to inventory; Image sum is already stored in log
-     - images now archived to images subdirectory
+***** TODO Case metadata persistence
+      Remember some attributes of a case and use them as defaults
+***** TODO Configuration File
+      Currently, the default locations are hard-coded.  Provide the ability for the end-user to specify these defaults in a specific file
+**** Analyze image
+***** Bugs
+***** Features
+****** TODO YARA integration
+** Version 0.4
+*** Analyze image (analyze_image.sh)
+**** Structure 
+**** Features
+***** Identify OS type
+****** TODO Windows 7
+****** TODO Windows 8
+****** TODO MacOSX
+***** Hashing
+****** TODO Target specific directories based on OS type
+****** TODO (option to) remove known good files (based on hash) from archived storage
+****** TODO Review the Hashing structure
+****** TODO Add to hash directories automatically
+***** Timeline
+*** Create image (create_image.sh)
+**** Structure
+**** Features
+*** Copy Evidence (copy_evidence.sh)
+**** Bugs
+***** TODO Needs to handle situation where a file already exists at destination
+*** NSRL (nsrl_fetch.sh)
+**** TODO Get the script working to download initial content
+*** Readme file
+**** TODO Migrate to Emacs Org format
+** Version 0.3
+   This is really the first "version" where most of the scripts are in working order
+*** Analyze image (review_drive.sh)
+**** Structure
+***** TODO rename from review_drive.sh to analyze_image.sh
+***** TODO change destination and working directories to start with capital letters
+***** DONE changed from '/bin/sh' to '/bin/bash' for processing
+***** DONE remove the image section to a different script
+**** Features
+   - added log2timeline/plaso
+   - added checks for AVG, f-prot, & Clam (current Clam options require 0.98
+   - Manifest collects more information about tasks
+   - re-worked the directory structure
+   - added some supporting documentation created at run-time
+*** Create image (create_image.sh)
+**** Bugs
+***** TODO Fix file-handling to deal with spaces in filenames
+**** Structure
+***** DONE Add an archive destination
+      - This stores a compressed copy of the image in a specified archive location
+      - Archives default to 7zip but fall-back to gzip
+**** Features
+***** DONE Inventory file
+      - tracks images created
+      - updates file archive location
+***** DONE Drive information
+      - Physical drive and logical partition info collected
+      - information is added to log file
+      - Considerably lowered 7z compression level
+      - modified many defaults for more streamlined workflow
+      - added Checksum field to inventory; Image sum is already stored in log
+      - images now archived to images subdirectory
