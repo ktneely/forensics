@@ -35,6 +35,8 @@
 ** Script Descriptions
 *** copy_evidence
    This is a silly, probably over-engineered script that Copies evidence files in a source directory, adds them to the evidence file, verifies that the copy was successful via comparing the SHA1 sum of the original with the copy.
+**** Purpose
+     The purpose of this script is to easily copy evidence data from sources on the network and drop them into the archival directories in a consistent manner.  It also checks the checksum of the source against the copied file.  If there is a mismatch, then the copy is deleted and the script exits.
 -----
 *** create_image 
     Create image is a shell script to prompt for some relevant
@@ -58,6 +60,7 @@ Your examination system should be configured to NOT automatically mount devices 
      - multiple 'examine' directories under mnt numbered sequentially (e.g. /mnt/examine1, /mnet/examine2...)
      - a /Data directory  (with a symlink from /data for typos)
      - a /Data/hashes directory that contains white and black list hash files, and also acts as a repository for collected hashes for later analysis
+
 **** Requirements:
      The Analyze image script has the most requirements
 ***** Mandatory
@@ -68,6 +71,7 @@ Your examination system should be configured to NOT automatically mount devices 
       - ClamAV
       - AVG (http://free.avg.com/us-en/download-free-all-product)
       - f-prot (installed under /opt/f-prot)
+
 **** How it works
      This script simply automates a number of tasks you would perform anyway in order to examine a disk image or preserve data for later review or outside consultants at such a time you realize that system you ignored became interesting due to new information.
      The functions are in alphabetical order, for no reason other than I am anal.
@@ -76,22 +80,11 @@ Your examination system should be configured to NOT automatically mount devices 
     A laughable script that helps to prepare your environment so that it meets the requirements to run the junk in this repository.  Also, it is because I am lazy while setting up a new system
 -------------
 *** NSRL fetch
-
-
-
-** Tables!
-Just to see how a table renders:
-
-|-------+-------+----------+--------|
-| Drive | Email | Document | Memory |
-| SSD   | PST   | DOC      | Mac    |
-| HD    | MBOX  | XST      | PC     |
-|-------+-------+----------+--------|
+    (Planned) This will go and grab the current version of the NSRL.
 
 * Footnotes
-
 [1] on Debian, you need to use testing repo
-   - add =deb http://ftp.debian.org/debian testing main= to apt sources
+   - add =deb http://ftp.debian.org/debian testing main= to /etc/apt/sources.lst
    - run =apt-get -t testing install libc6-amd64 libc6-dev libc6-dbg=
 
 
