@@ -13,11 +13,13 @@ check_program () {  # checks is a program exists on the system
 # create the necessary directories under /Data
 
 echo "This script assumes you have write access to / or /Data"
+mkdir -p /Data/Archive
 mkdir -p /Data/Forensics
 mkdir -p /Data/Hashes/NSRL
-mkdir /Data/Hashes/Malware
-mkdir /Data/Wordlists
-mkdir /Data/Malware
+mkdir -p /Data/Hashes/Malware
+mkdir -p /Data/Malware
+mkdir -p /Data/Wordlists
+
 
 # install some dependencies
 if check_program apt-get; then

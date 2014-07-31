@@ -49,9 +49,9 @@ collect_info () {
     echo "Enter the image repository. (def: [/Data/Forensics/$CASE_NAME/images])"
     read input_image
     IMAGE_DIR=${input_image:=/Data/Forensics/$CASE_NAME/images}
-    echo "Enter the location for archives. (def: [/Data/archive/$CASE_NAME])"
+    echo "Enter the location for archives. (def: [/Data/Archive/$CASE_NAME])"
     read input_archive
-    ARCHIVE_DIR=${input_archive:=/Data/archive/$CASE_NAME}
+    ARCHIVE_DIR=${input_archive:=/Data/Archive/$CASE_NAME}
     echo "What is the decryption key? (def: 'none' for no encryption)"
     read input_key
     DECRYPTION_KEY=${input_key:=none}
