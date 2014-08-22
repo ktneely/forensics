@@ -13,6 +13,8 @@ YEAR=$1
 MON=$2
 MON_END=$((MON + 1))
 
+echo $MON_END
+
 # create test files for bounding the relevant files
 touch -d $YEAR-$MON-01 /tmp/dir_compute.begin
 touch -d $YEAR-$MON_END-01 /tmp/dir_compute.end
@@ -43,7 +45,9 @@ dirwalk() {
 #		    dirwalk "$i"
 #		fi
 	    done
-	    echo -e "${PROJECT##*/},${i##*/},$MON,$YEAR,$TOTAL" >> ./data_output.csv
+	    if [ $TOTAL -gt 0 ]; then		
+		echo -e "${PROJECT##*/},${i##*/},$MON,$YEAR,$TOTAL" >> ./data_output.csv
+	    fi
 	    dirwalk "$i"
 	fi
     done
@@ -53,7 +57,6 @@ dirwalk() {
 
 filetime() {
     if [ "$1" -nt "/tmp/dir_compute.begin" ] && [ "$1" -ot "/tmp/dir_compute.end" ]; then
-#	echo "$1 is between the dates"  #debug line
 	SIZE=`stat -c%s "$1"`
 	TOTAL=$(($TOTAL + $SIZE))
 	return $TOTAL
@@ -70,8 +73,8 @@ data_template() {
 if [ $# != 3 ]; then    #check that the command line was correct
     echo "Incorrect number of arguments!" >&2
     echo ""
-    echo -e "\t usage: dir_compute.sh YYYY MM /path/to/examine"
-    echo -e "\t \t where YYYY is a 4 digit year and MM is a 2 digit month"
+    echo -e "\t usage: monthly_collection.sh YYYY MM /path/to/examine"
+    echo -e "\t \t where YYYY is a 4 digit year and MM is a 1 or 2 digit month"
 else
     data_template
     echo -e "Calculating size of collected data for ${MONTHS[$MON]}, $YEAR\n"
