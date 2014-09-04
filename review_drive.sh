@@ -76,7 +76,7 @@ collect_info () {
     echo "What directory should be used for storing the forensics ouput? (def: /Data/Forensics/$CASE_NAME)"
     read root_dir
     FORENSICS_DIR=${root_dir:=/Data/Forensics/$CASE_NAME}
-    ANALYSIS_DIR=$FORENSICS_DIR/analysis
+    ANALYSIS_DIR=$FORENSICS_DIR/Analysis
     echo "What is the approximate date/time of interest?  YYYY-MM-DD HH:MM:SS"
     read event_time
     }
@@ -87,7 +87,7 @@ compare_hash () {
     # compare MD5
     echo "checking for md5deep matches"
     echo -e "MD5sum matches: \n" > $ANALYSIS_DIR/hash_match.log >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
-    md5deep -r -i 4M -M ~/malware/analysis/malware.md5sums $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/* $EXAMINE_DIR/WINDOWS/system32/* >> $ANALYSIS_DIR/hash_match.log
+    md5deep -r -i 4M -M ~/malware/Analysis/malware.md5sums $EXAMINE_DIR/Documents\ and\ Settings/$VICTIM/* $EXAMINE_DIR/WINDOWS/system32/* >> $ANALYSIS_DIR/hash_match.log
     # compare SHA1
     # compare SSDEEP
     # if hash_match <> 0 bytes, then
@@ -98,15 +98,15 @@ compare_hash () {
 
 create_docs () {
     echo -e "============================================\n" > $ANALYSIS_DIR/$SYSTEM-Manifest.lst
-    echo -e "InfoSec automated examination script\n" >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
+    echo -e "Information Security automated examination script\n" >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
     echo -e "$SYSTEM \t $CASE_NAME \t $(date +%Y%m%d-%T)" >> $FORENSICS_DIR/../inventory.txt
     echo -e "Disk examination directory structure: \n"  > $FORENSICS_DIR/Readme.txt
     echo -e " |---./			<---- parent dir" >> $FORENSICS_DIR/Readme.txt
     echo -e "     |---$CASE_NAME	<---- case/incident identifier" >> $FORENSICS_DIR/Readme.txt
-    echo -e "     	 |---images		<---- disk images and raw evidence data" >> $FORENSICS_DIR/Readme.txt
-    echo -e "	 |---analysis		<---- output of tools and notes" >> $FORENSICS_DIR/Readme.txt
-    echo -e "	 |---malware		<---- discovered malicious code samples" >> $FORENSICS_DIR/Readme.txt
-    echo -e "	 |---logs		<---- other supporting logs (e.g. network traffic)" >> $FORENSICS_DIR/Readme.txt
+    echo -e "     	 |---Images	<---- disk images and raw evidence data" >> $FORENSICS_DIR/Readme.txt
+    echo -e "	 |---Analysis		<---- output of tools and notes" >> $FORENSICS_DIR/Readme.txt
+    echo -e "	 |---Malware		<---- discovered malicious code samples" >> $FORENSICS_DIR/Readme.txt
+    echo -e "	 |---Logs		<---- other supporting logs (e.g. network traffic)" >> $FORENSICS_DIR/Readme.txt
     }
 
 create_timeline () {
@@ -183,7 +183,7 @@ scanimage () {
     echo -e "\n \n Scan the mounted image with available AV scanners" >> $ANALYSIS_DIR/$SYSTEM-Manifest.lst
     echo -e "----------------------------------------------------\n" >>  $ANALYSIS_DIR/$SYSTEM-Manifest.lst
     echo -e "Creating $FORENSICS_DIR/malware for storage of infected files\n" >>  $ANALYSIS_DIR/$SYSTEM-Manifest.lst
-    mkdir -p $ANALYSIS_DIR/malware
+    mkdir -p $ANALYSIS_DIR/Malware
     if check_program clamscan; then
 	echo "starting ClamAV scan" >>  $ANALYSIS_DIR/$SYSTEM-Manifest.lst
 	clamscan -r --infected --copy=$ANALYSIS_DIR/malware --log=$ANALYSIS_DIR/$SYSTEM-clam.log $EXAMINE_DIR
