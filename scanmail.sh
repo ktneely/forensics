@@ -2,7 +2,7 @@
 
 ###
 # This is the InfoSec automated Outlook PST examination script v 0.1
-# created by Kevin T. Neely - Junipers Network InfoSec
+# created by Kevin T. Neely
 #
 # -= Version History =-
 #
