@@ -31,11 +31,16 @@ if [ "$ANSWER" eq "y" ]
 else
 	ANSWER = n
 
-# Compile and install libbde
-apt-get update  # update packages
-apt-get install build-essential fuse libfuse-dev  # install packages
+# Retrieve necessary packages
+apt-get update  # update package cache
+apt-get install build-essential fuse libfuse-dev wget # install packages
+
+# Download and decompress libbde source code
 cd /tmp
-tar xzvf ~/bitlocker/libbde-20150204.tar.gz
+wget -O libbde-20150204.tar.gz https://github.com/libyal/libbde/releases/download/20150204/libbde-alpha-20150204.tar.gz
+tar xzvf /tmp/libbde-20150204.tar.gz
+
+# Install libbde 
 cd libbde-20150204
 ./configure     # prepare for compilation
 make            # compile
