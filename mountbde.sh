@@ -18,7 +18,7 @@
 # Gather information
 echo "Enter the recovery key for this device"
 read KEY        # save the key as a variable
-echo "What is the device name of the bitlocker-encrypted partition? (e.g. /dev/sdb2)
+echo "What is the device name of the bitlocker-encrypted partition? (e.g. /dev/sdb2)"
 read PARTITION
 echo -e "Would you like to mount a target drive?"
 echo -e "You may insert it now."
@@ -26,7 +26,7 @@ echo -e "(y/n)"
 read ANSWER
 if [ "$ANSWER" eq "y" ]
 	then 
-	echo -e "What is the device name for the target partition? (e.g. /dev/sdc1)
+	echo -e "What is the device name for the target partition? (e.g. /dev/sdc1)"
 	read TARGET
 else
 	ANSWER = n
