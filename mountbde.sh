@@ -21,7 +21,7 @@ read KEY        # save the key as a variable
 echo "What is the device name of the bitlocker-encrypted partition? (e.g. /dev/sdb2)
 read PARTITION
 echo -e "Would you like to mount a target drive?"
-echo -e "You may insert it now if you haven't already.\n"
+echo -e "You may insert it now."
 echo -e "(y/n)"
 read ANSWER
 if [ "$ANSWER" eq "y" ]
