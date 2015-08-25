@@ -30,6 +30,7 @@ if [ "$ANSWER" eq "y" ]
 	read TARGET
 else
 	ANSWER = n
+fi
 
 # Retrieve necessary packages
 apt-get update  # update package cache
