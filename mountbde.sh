@@ -33,16 +33,17 @@ else
 fi
 
 # Retrieve necessary packages
-apt-get update  # update package cache
-apt-get install build-essential fuse libfuse-dev wget # install packages
+apt-get -y update  # update package cache
+apt-get -y install build-essential fuse libfuse-dev wget # install packages
 
 # Download and decompress libbde source code
 cd /tmp
-wget -O libbde-20150204.tar.gz https://github.com/libyal/libbde/releases/download/20150204/libbde-alpha-20150204.tar.gz
-tar xzvf /tmp/libbde-20150204.tar.gz
+#wget -O libbde-20150204.tar.gz https://github.com/libyal/libbde/releases/download/20150204/libbde-alpha-20150204.tar.gz
+wget -O libbde.tar.gz https://github.com/libyal/libbde/releases/download/20160110/libbde-alpha-20160110.tar.gz
+tar xzvf /tmp/libbde.tar.gz
 
 # Install libbde 
-cd libbde-20150204
+cd libbde-20160110
 ./configure     # prepare for compilation
 make            # compile
 make install    # install for easier pathing
