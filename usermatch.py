@@ -59,7 +59,8 @@ non_emps = makedict(active_non_emps, ',', '"', 0, 3)
 # dictionaries, so we need to flip the key:value pairs
 userdict = dict((x,y) for y,x in user_reverse.items())
 
-
+# Create lists of the accounts with weak passwords that are still
+# active in the user directory.
 liveaccounts(emps, "weak-employee-accounts.csv")
 liveaccounts(non_emps, "weak-service-accounts.csv")
 
