@@ -84,6 +84,11 @@ Your examination system should be configured to NOT automatically mount devices 
     A laughable script that helps to prepare your environment so that it meets the requirements to run the junk in this repository.  Also, it is because I am lazy while setting up a new system
 -------------
 
+*** inventory
+    This simple shell script creates an inventory of the provided
+    path, which is expected to be a set of directories, each for a
+    case or collection of evidence
+
 *** litholds
      This quick command takes a list of custodians in various CSV files[2] and  then sorts and de-duplicates them, outputting to a file called 'custodians.txt' 
 -------------
